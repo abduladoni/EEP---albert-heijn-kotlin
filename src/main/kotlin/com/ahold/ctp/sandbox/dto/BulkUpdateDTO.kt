@@ -6,5 +6,5 @@ import jakarta.validation.constraints.NotEmpty
 data class BulkUpdateDTO(
     @field:Valid
     @field:NotEmpty
-    val deliveries: List<DeliveryUpdateDTO>
+    val deliveries: List<DeliveryDTO>
 )

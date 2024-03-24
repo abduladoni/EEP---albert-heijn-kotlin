@@ -18,15 +18,15 @@ class Delivery(
     var id: UUID = UUID.randomUUID(),
 
     @Column(name = "vehicle_id")
-    var vehicleId: String,
+    var vehicleId: String?,
 
     @Column(name = "started_at")
-    var startedAt: ZonedDateTime,
+    var startedAt: ZonedDateTime?,
 
     @Column(name = "finished_at")
-    var finishedAt: ZonedDateTime,
+    var finishedAt: ZonedDateTime?,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    var status: Status,
+    var status: Status?,
 )

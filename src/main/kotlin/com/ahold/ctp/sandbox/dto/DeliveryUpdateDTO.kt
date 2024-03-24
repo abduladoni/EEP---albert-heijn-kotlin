@@ -6,9 +6,9 @@ import jakarta.validation.constraints.NotBlank
 
 data class DeliveryUpdateDTO(
     @field:NotBlank
-    val finishedAt: ZonedDateTime,
+    var finishedAt: ZonedDateTime?,
 
     @field:NotBlank
-    val status: Status,
-    val id: String? = null,
+    var status: Status?,
+    var id: String? = null,
 )

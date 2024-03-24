@@ -9,13 +9,13 @@ data class DeliveryDTO(
     val id: String? = null,
 
     @field:NotBlank
-    val vehicleId: String,
+    val vehicleId: String?,
 
     @field:NotNull
-    val startedAt: ZonedDateTime,
+    val startedAt: ZonedDateTime?,
 
     val finishedAt: ZonedDateTime? = null,
 
     @field:NotBlank
-    val status: Status
+    val status: Status?
 )
