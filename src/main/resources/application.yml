@@ -2,10 +2,10 @@ spring:
   application:
     name: ctp-backend-assignment-sandbox
   datasource:
-    url: jdbc:h2:mem:ctp_backend_assignment_sandbox
+    url: ${DB_URL}
     driverClassName: org.h2.Driver
-    username: sa
-    password: sa
+    username: ${H2_USER}
+    password: ${H2_PASSWORD}
     hikari:
       connectionTimeout: 20000
       maximumPoolSize: 5

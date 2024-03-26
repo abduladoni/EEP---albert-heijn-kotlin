@@ -9,9 +9,7 @@ object PatchRequestHelper {
     fun deliveryPatcher(existingDelivery: Delivery?, partialDelivery: Delivery?) {
         val deliveryClass: Class<*> = Delivery::class.java
         val declaredFields = deliveryClass.declaredFields
-        println(declaredFields.size)
         for (field in declaredFields) {
-            println(field.name)
             field.isAccessible = true
             val value = field[partialDelivery]
             if (value != null) {
