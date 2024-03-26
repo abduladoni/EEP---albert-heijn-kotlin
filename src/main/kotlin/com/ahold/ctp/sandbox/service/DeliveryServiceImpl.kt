@@ -16,6 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.Optional
 import java.util.UUID
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 
 @Service
 class DeliveryServiceImpl(
@@ -35,13 +38,14 @@ class DeliveryServiceImpl(
     }
 
     override fun updateDelivery(deliveryUpdateDTO: DeliveryUpdateDTO): DeliveryDTO? {
+        logger.info("Updating delivery: $deliveryUpdateDTO")
         var existingDelivery = getExistingDelivery(deliveryUpdateDTO)
         patchRequest.deliveryPatcher(existingDelivery, mapToDelivery(deliveryUpdateDTO))
         return mapToDeliveryDTO(deliveryRepository.save(existingDelivery))
     }
 
     override fun updateMultipleDeliveries(deliveryUpdateDTOS: List<DeliveryUpdateDTO>): List<DeliveryDTO> {
-
+        logger.info("Updating multiple deliveries: $deliveryUpdateDTOS")
         var existingDeliveries = validateBulkUpdateDeliveriesAndGetExistingDeliveries(deliveryUpdateDTOS)
         var patchedDeliveries = patchBulkUpdateDeliveryList(existingDeliveries, deliveryUpdateDTOS)
         var persistedDeliveries = deliveryRepository.saveAll(patchedDeliveries)
@@ -49,7 +53,7 @@ class DeliveryServiceImpl(
     }
 
     override fun getBusinessSummary(): BusinessSummaryDTO {
-        TODO("Not yet implemented")
+        return calculateDeliverySummary()
     }
 
     private fun getExistingDelivery(deliveryUpdateDTO: DeliveryUpdateDTO): Delivery{
@@ -91,5 +95,30 @@ class DeliveryServiceImpl(
         var existingDelivery = deliveriesMap.get(UUID.fromString(deliveryUpdateDTO.id))
         patchRequest.deliveryPatcher(existingDelivery, mapToDelivery(deliveryUpdateDTO))
         return existingDelivery
+    }
+
+    private fun calculateDeliverySummary(): BusinessSummaryDTO {
+        val now = ZonedDateTime.now(ZoneId.of("Europe/Amsterdam"))
+        val startOfDay = now.minusDays(1).withHour(0).withMinute(0).withSecond(0).withNano(0)
+        val endOfDay = startOfDay.plusDays(1)
+
+        logger.info("Calculating business summary for deliveries started between $startOfDay and $endOfDay")
+
+        val deliveries = deliveryRepository.findDeliveriesStartedYesterday(startOfDay, endOfDay)
+
+        val deliveryCount = deliveries.size
+
+        val averageMinutesBetweenDeliveryStart =
+                if (deliveryCount > 1) {
+                    val totalMinutesBetweenDeliveries = deliveries.windowed(2, 1)
+                            .sumOf { (first, second) -> ChronoUnit.MINUTES.between(first.startedAt, second.startedAt) }
+
+                    (totalMinutesBetweenDeliveries / (deliveryCount - 1)).toInt()
+                } else {
+                    0
+                }
+        logger.info("Business summary calculated: $deliveryCount deliveries, " +
+                "average minutes between delivery start: $averageMinutesBetweenDeliveryStart")
+        return BusinessSummaryDTO(deliveryCount, averageMinutesBetweenDeliveryStart)
     }
 }

@@ -16,6 +16,6 @@ data class DeliveryDTO(
 
     val finishedAt: ZonedDateTime? = null,
 
-    @field:NotBlank
+    @field:NotNull
     val status: Status?
 )

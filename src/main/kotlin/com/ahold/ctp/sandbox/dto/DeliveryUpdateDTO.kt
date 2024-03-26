@@ -2,13 +2,13 @@ package com.ahold.ctp.sandbox.dto
 
 import com.ahold.ctp.sandbox.common.Status
 import java.time.ZonedDateTime
-import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
 
 data class DeliveryUpdateDTO(
-    @field:NotBlank
+    @field:NotNull
     var finishedAt: ZonedDateTime?,
 
-    @field:NotBlank
+    @field:NotNull
     var status: Status?,
     var id: String? = null,
 )
